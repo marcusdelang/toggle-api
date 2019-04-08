@@ -14,3 +14,5 @@
 # Maven
 log/
 target/
+
+sourcecode/*/node_modules/

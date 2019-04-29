@@ -16,7 +16,7 @@ function setRoutes(app) {
                 console.log(err);
                 response.send(err)
             } else {
-                response.send('API: OK' + ' IO: ' + res);
+                response.send('API: OK' + ' IO: ' + body);
             }
         });
     });

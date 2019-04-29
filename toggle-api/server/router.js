@@ -11,11 +11,13 @@ function setRoutes(app) {
     })
 
     app.get("/api/turnmeon", function (request, response) {
-        req.get('http://130.229.152.208/on', function (err) {
+        req.get('http://130.229.152.208/on', function (err, res, body) {
             if (err) {
                 console.log(err);
+                response.send(err)
+            } else {
+                response.send('API: OK' + ' IO: ' + res);
             }
-            response.send("OK");
         });
     });
 

@@ -11,10 +11,12 @@ function setRoutes(app) {
     })
 
     app.get("/api/turnmeon", function (request, response) {
-        req.get('http://130.229.152.208/on', function () {
-
+        req.get('http://130.229.152.208/on', function (err) {
+            if (err) {
+                console.log(err);
+            }
+            response.send("OK");
         });
-        response.send("OK");
     });
 
     app.post("/toggle-api/post-test", function (request, response) {

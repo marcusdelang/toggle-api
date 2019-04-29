@@ -10,8 +10,19 @@ function setRoutes(app) {
         response.send(JSON.stringify(jsonTest))
     })
 
-    app.get("/api/turnmeon", function (request, response) {
+    app.get("/api/turnon", function (request, response) {
         req.get('http://130.229.152.208/on', function (err, res, body) {
+            if (err) {
+                console.log(err);
+                response.send(err)
+            } else {
+                response.send('API: OK' + ' IO: ' + body);
+            }
+        });
+    });
+
+    app.get("/api/turnoff", function (request, response) {
+        req.get('http://130.229.152.208/off', function (err, res, body) {
             if (err) {
                 console.log(err);
                 response.send(err)

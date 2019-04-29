@@ -11,7 +11,7 @@ function setRoutes(app) {
     })
 
     app.get("/api/turnmeon", function (request, response) {
-        req.get('http://130.229.167.169/turnon', function () {
+        req.get('http://130.229.167.169/on', function () {
 
         });
         response.send("OK");

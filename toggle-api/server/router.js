@@ -1,7 +1,7 @@
 var req = require('request');
 
 function setRoutes(app) {
-    app.get("/toggle-api/helloworld", function (request, response) {
+    app.get("/api/helloworld", function (request, response) {
         var jsonTest = {
             firstName: "Hello",
             lastName: "Worldsson",

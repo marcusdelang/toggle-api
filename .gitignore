@@ -15,4 +15,4 @@
 log/
 target/
 
-sourcecode/*/node_modules/
+*/node_modules/

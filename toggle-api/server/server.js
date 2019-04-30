@@ -5,14 +5,11 @@ var router = require('./router');
 function start(config) {
   var app = express();
 
-  // Set up server configuration
-  // parse application/x-www-form-urlencoded
+  // server config
   app.use(bodyParser.urlencoded({ extended: false }))
-
-  // parse application/json
   app.use(bodyParser.json())
 
-  // Set up routes (endpoints)
+  // set up routes (endpoints)
   router(app);
 
   var port = process.env.PORT || config.port;

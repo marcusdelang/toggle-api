@@ -1,22 +1,26 @@
 var createResponse = require('./create-response');
 var interface = require('./application-interface');
+var getDevices = require('./../database').devices;
 const TEMP_ID_HARD_CODED = 1;
 
-// Template to create response
+// Template to call interface and send response
 function callInterface(request, response, interfaceCall, createResponseCall) {
     var reqBody = JSON.parse(request.body);
-        var id = reqBody.id;
-        interfaceCall(TEMP_ID_HARD_CODED, function (error, msg) {
+    var id = reqBody.id;
+    getDevices(function(devices){
+        var deviceIp = devices[id]
+        interfaceCall(deviceIp, function (error, msg) {
             if (error) {
-                console.log(error)
+                console.log("Could not call interface: " + error)
                 return createResponse.error(error, function (res) {
                     response.send(res);
-                })
+                });
             }
             createResponseCall(msg, function (res) {
                 response.send(res);
-            })
+            });
         });
+    });
 }
 
 // Define responses

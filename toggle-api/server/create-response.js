@@ -1,4 +1,4 @@
-
+// Defines the HTTP response with the message received from the application.
 var responses = {
     on: function (msg, cb) {
         var response = msg;

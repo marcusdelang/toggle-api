@@ -1,9 +1,8 @@
 var createResponse = require('./create-response');
 var interface = require('./application-interface');
 var getDevices = require('./../database').devices;
-const TEMP_ID_HARD_CODED = 1;
 
-// Template to call interface and send response
+// Do interface-call and send response back
 function callInterface(request, response, interfaceCall, createResponseCall) {
     var reqBody = JSON.parse(request.body);
     var id = reqBody.id;
@@ -23,7 +22,7 @@ function callInterface(request, response, interfaceCall, createResponseCall) {
     });
 }
 
-// Define responses
+// Specify the request actions and responses
 var requestActions = {
     powerOn: function (request, response) {
         callInterface(request, response, interface.turnOn, createResponse.on);

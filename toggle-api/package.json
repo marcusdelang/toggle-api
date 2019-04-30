@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node test/toggle-api-test.js"
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",

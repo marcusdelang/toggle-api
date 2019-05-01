@@ -1,43 +1,10 @@
-var req = require('request');
+var handleRequest = require('./handle-request');
 
+// Define routes for API and specify action
 function setRoutes(app) {
-    app.get("/api/helloworld", function (request, response) {
-        var jsonTest = {
-            firstName: "Hello",
-            lastName: "Worldsson",
-            announcement: "This is a JSON test, no need to worry, just a test. :) ."
-        }
-        response.send(JSON.stringify(jsonTest))
-    })
-
-    app.get("/api/turnon", function (request, response) {
-        req.get('http://130.229.152.208/on', function (err, res, body) {
-            if (err) {
-                console.log(err);
-                response.send(err)
-            } else {
-                response.send('API: OK' + ' IO: ' + body);
-            }
-        });
-    });
-
-    app.get("/api/turnoff", function (request, response) {
-        req.get('http://130.229.152.208/off', function (err, res, body) {
-            if (err) {
-                console.log(err);
-                response.send(err)
-            } else {
-                response.send('API: OK' + ' IO: ' + body);
-            }
-        });
-    });
-
-    app.post("/toggle-api/post-test", function (request, response) {
-        var name = request.body.name;
-        response.send(name);
-    });
+    app.post("/api/power/on", handleRequest.powerOn);
+    app.post("/api/power/off", handleRequest.powerOff);
+    app.post("/api/connection/status", handleRequest.connectionStatus);
 }
-
-
 
 module.exports = setRoutes;

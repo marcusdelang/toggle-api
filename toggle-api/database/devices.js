@@ -1,20 +1,24 @@
 var fs = require('fs');
-var devices, callback;
+var devices;
 
-fs.readFile('./devices.json', function (error, data){
-    if (error) {
-        return console.log(error);
-    }
-    if (typeof callback == 'function'){
+/*
+var getIp = function (id, callback) {
+    fs.readFile(__dirname + '/devices.json', function (error, data) {
         devices = JSON.parse(data);
-        callback(devices);
-    }
-});
+        var ip = devices[id];
+        if (!ip) {
+            var error = "ERROR: Ip could not be found for this id";
+            return callback(error, null);
+        }
+        callback(null, devices[id]);
+    });
+}
+*/
 
-module.exports = function (cb) {
-    if (typeof devices != 'undefined'){
-        cb(devices); // If devices is already define, I don't wait.
-    } else {
-        callback = cb;
-    }
+function getIp(id, callback) {
+    callback(null, '130.229.167.163');
+}
+
+module.exports = {
+    getIp: getIp
 }

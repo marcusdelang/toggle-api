@@ -15,7 +15,7 @@ function callToggle(ip, call, callback) {
 }
 
 var interface = {
-    turnOn = function(ip, callback){
+    turnOn: function(ip, callback){
         callToggle(ip, toggles.outlet.on, callback);
     },
 

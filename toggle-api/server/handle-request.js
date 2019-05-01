@@ -1,23 +1,29 @@
 var createResponse = require('./create-response');
-var interface = require('./application-interface');
-var getDevices = require('./../database').devices;
+var interface = require('./../application/application-interface');
+var getDeviceIp = require('./../database').devices.getIp;
+var HARD_CODED_DEVICE_ID = 1;
 
 // Do interface-call and send response back
 function callInterface(request, response, interfaceCall, createResponseCall) {
-    var reqBody = JSON.parse(request.body);
-    var id = reqBody.id;
-    getDevices(function(devices){
-        var deviceIp = devices[id]
+
+    // Enable this part to parse device id from request body
+    /*if (!request.body) {
+        return createResponse.badRequest("HTTP body not valid JSON", response);
+    }
+    var deviceId = request.body.id;
+    */
+
+    getDeviceIp(HARD_CODED_DEVICE_ID, function (error, deviceIp) {
+        if (error) {
+            console.log("Error reading database: " + error);
+            return createResponse.serverError(error, response);
+        }
         interfaceCall(deviceIp, function (error, msg) {
             if (error) {
                 console.log("Could not call interface: " + error)
-                return createResponse.error(error, function (res) {
-                    response.send(res);
-                });
+                return createResponse.serverError(error, response);
             }
-            createResponseCall(msg, function (res) {
-                response.send(res);
-            });
+            createResponseCall(msg, response);
         });
     });
 }

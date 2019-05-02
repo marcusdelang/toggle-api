@@ -1,22 +1,78 @@
-var assert = require('assert')
+var devices = require('./../database').devices;
+var chai = require('chai');
+var assert = chai.assert;
+var expect = chai.expect;
+var numbers = [1, 2, 3, 4, 5];
 var fs = require('fs');
-var db = require('./../integration/database');
 
-describe('api actions, on', () => {
-    var testDatabase = {
-        devices: {
-            1: '1.1.1.1',
-            2: '2.2.2.2',
-            3: '3.3.3.3'
+var temp;
+
+describe('devices database', function () {
+
+    before(function (done) {
+        console.log(0);
+        try {
+            var devicesJson = fs.readFileSync(__dirname + '/../database/devices.json')
+        } catch (e) {
+            console.log('Could not read database file.');
+            return done(e);
         }
-    }
-    fs.writeFile('./test-database.json', JSON.stringify(testDatabase), function (err, data) {
-        if (err) {
-            throw err;
+        try {
+            var devicesObj = JSON.parse(devicesJson);
+        } catch (e) {
+            console.log('Could not parse devices json');
+            return done(e);
         }
-        var database = new db('./test-database.json');
-        var expected = '1.1.1.1';
-        var actual = database.getIp(1);
-        assert.equal(actual, expected);
+        var testIps = {
+            'test_ip1': 'test ip 1',
+            'test_ip2': 'test ip 2'
+        }
+        var testDB = JSON.stringify(Object.assign(testIps, devicesObj), null, 2);
+        try {
+            fs.writeFileSync(__dirname + '/../database/devices.json', testDB);
+        } catch (e) {
+            console.log('Could not write to devices.json');
+            return done(e);
+        }
+        done();
     });
+
+    after(function (done) {
+        try {
+            var devicesJson = fs.readFileSync(__dirname + '/../database/devices.json')
+        } catch (e) {
+            console.log('Could not read devices.json');
+            return done(e);
+        }
+        try {
+            var devicesObj = JSON.parse(devicesJson);
+        } catch (e) {
+            console.log('Could not parse devices as json');
+            return done(e);
+        }
+        delete devicesObj['test_ip1']
+        delete devicesObj['test_ip2']
+        fs.writeFileSync(__dirname + '/../database/devices.json', JSON.stringify(devicesObj));
+        done();
+
+    });
+
+    it('should lookup an ip', function (done) {
+        devices.getIp('test_ip1', function (error, ip) {
+            expect(typeof ip).to.be.equal('string');
+            done();
+        });
+    });
+
+    it('should lookup correct ip', function (done) {
+        devices.getIp('test_ip1', function (error, ip) {
+            expect(ip).to.be.equal('test ip 1');
+            devices.getIp('test_ip2', function (error, ip) {
+                console.log(3);
+                expect(ip).to.be.equal('test ip 2');
+                done();
+            });
+        });
+    });
+
 });

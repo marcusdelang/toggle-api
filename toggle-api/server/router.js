@@ -4,7 +4,7 @@ var handleRequest = require('./handle-request');
 function setRoutes(app) {
     app.post("/api/power/on", handleRequest.powerOn);
     app.post("/api/power/off", handleRequest.powerOff);
-    app.post("/api/connection/status", handleRequest.connectionStatus);
+    app.post("/api/status", handleRequest.status);
 }
 
 module.exports = setRoutes;

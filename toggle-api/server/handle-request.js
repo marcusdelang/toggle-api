@@ -38,8 +38,8 @@ var requestActions = {
         callInterface(request, response, interface.turnOff, createResponse.off);
     },
 
-    connectionStatus: function (request, response) {
-        callInterface(request, response, interface.connectionStatus, createResponse.connectionStatus);
+    status: function (request, response) {
+        callInterface(request, response, interface.status, createResponse.status);
     }
 }
 

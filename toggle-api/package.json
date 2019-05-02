@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "node test/index.js"
+    "test": "./node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -18,11 +18,14 @@
   "dependencies": {
     "@cloudant/cloudant": "^3.0.2",
     "body-parser": "^1.17.x",
-    "cfenv": "^1.0.x",
+    "cfenv": "^1.2.2",
     "dotenv": "^4.0.0",
     "express": "^4.15.x",
-    "request": "^2.88.0",
-    "assert": "^1.4.1"
+    "request": "^2.88.0"
   },
-  "author": "Marcus Nilsson"
+  "author": "Marcus Nilsson",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4"
+  }
 }

@@ -23,8 +23,8 @@ var interface = {
         callToggle(ip, toggles.outlet.off, callback)
     },
 
-    connectionStatus: function(ip, callback) {
-        callToggle(ip, toggles.outlet.connectionStatus, callback)
+    status: function(ip, callback) {
+        callToggle(ip, toggles.outlet.status, callback)
     }
 }
 

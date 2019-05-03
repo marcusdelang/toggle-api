@@ -6,8 +6,10 @@ function start(config) {
   var app = express();
 
   // Server parsing-config
-  app.use(express.json());
-  app.use(express.urlencoded());
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({
+    extended: true
+  }));
 
   // Specify API routes (endpoints)
   router(app);

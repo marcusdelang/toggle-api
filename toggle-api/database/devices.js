@@ -1,7 +1,8 @@
 var fs = require('fs');
+var pathToDatabase = __dirname + '/devices.json';
 var devices;
 
-/*
+
 var getIp = function (id, callback) {
     fs.readFile(__dirname + '/devices.json', function (error, data) {
         devices = JSON.parse(data);
@@ -13,15 +14,30 @@ var getIp = function (id, callback) {
         callback(null, devices[id]);
     });
 }
-*/
 
 
 
-function getIp(id, callback) {
+
+/*function getIp(id, callback) {
     callback(null, '130.229.167.163');
+}*/
+
+function updateIp(id, ip, callback) {
+    fs.readFile(pathToDatabase, function (error, data) {
+        devices = JSON.parse(data);
+        devices[id] = ip;
+        fs.writeFile(pathToDatabase, JSON.stringify(devices, null, 2), function (error) {
+            if (error) {
+                console.log(error);
+                return callback(error, null);
+            }
+            callback(null, 'Ip updated');
+        })
+    });
 }
 
 
 module.exports = {
-    getIp: getIp
+    getIp: getIp,
+    updateIp: updateIp
 }

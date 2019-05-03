@@ -1,4 +1,7 @@
 var toggles = require('./../toggles');
+var getDeviceIp = require('./../database').devices.getIp;
+var updateDeviceIp = require('./../database').devices.updateIp;
+
 
 function handleCallback(error, message, callback) {
     if (error) {
@@ -15,8 +18,14 @@ function callToggle(ip, call, callback) {
 }
 
 var interface = {
-    turnOn: function(ip, callback){
-        callToggle(ip, toggles.outlet.on, callback);
+    turnOn: function (id, callback) {
+        getDeviceIp(id, function (error, ip) {
+            if (error) {
+                console.log("Error reading database: " + error);
+                return createResponse.serverError(error, response);
+            }
+            callToggle(ip, toggles.outlet.on, callback);
+        });
     },
 
     turnOff: function(ip, callback) {
@@ -25,6 +34,16 @@ var interface = {
 
     status: function(ip, callback) {
         callToggle(ip, toggles.outlet.status, callback)
+    },
+
+    register: function (deviceId, deviceIp, callback) {
+        updateDeviceIp(deviceId, deviceIp, function(error, message){
+            if (error) {
+                return callback('Device IP not updated: ' + error, null);
+            }
+            console.log('Device registered');
+            return callback(null, 'Device registered');
+        });
     }
 }
 

@@ -1,45 +1,91 @@
 var createResponse = require('./create-response');
 var interface = require('./../application/application-interface');
-var getDeviceIp = require('./../database').devices.getIp;
 var HARD_CODED_DEVICE_ID = 1;
 
-// Do interface-call and send response back
-function callInterface(request, response, interfaceCall, createResponseCall) {
-
-    // Enable this part to parse device id from request body
-    /*if (!request.body) {
-        return createResponse.badRequest("HTTP body not valid JSON", response);
+function idFromRequest(request, callback) {
+    if (!request) {
+        return callback("Request undefined", null);
     }
-    var deviceId = request.body.id;
-    */
+    if (!request.body) {
+        return callback("Request body undefined", null)
+    }
+    if (!request.body.id) {
+        return callback("Id undefined", null)
+    }
+    callback(null, request.body.id);
+}
 
-    getDeviceIp(HARD_CODED_DEVICE_ID, function (error, deviceIp) {
-        if (error) {
-            console.log("Error reading database: " + error);
-            return createResponse.serverError(error, response);
-        }
-        interfaceCall(deviceIp, function (error, msg) {
-            if (error) {
-                console.log("Could not call interface: " + error)
-                return createResponse.serverError(error, response);
-            }
-            createResponseCall(msg, response);
-        });
-    });
+function ipFromRequest(request, callback) {
+    if (!request) {
+        return callback("Request undefined", null);
+    }
+    if (!(request.headers['x-forwarded-for'] || request.ip)) {
+        return callback("Request ip undefined", null)
+    }
+    var ip = request.headers['x-forwarded-for'] || request.ip;
+
+    if (ip.match(/::ffff:/)) {
+        ip = ip.replace('::ffff:', '');
+    }
+    if (!ip.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)) {
+        return callback('Received invalid IP', null);
+    } 
+    callback(null, ip)
 }
 
 // Specify the request actions and responses
 var requestActions = {
     powerOn: function (request, response) {
-        callInterface(request, response, interface.turnOn, createResponse.on);
+        idFromRequest(request, function (error, id) {
+            if (error) {
+                console.log('Could not read device id: ' + error);
+                return createResponse.badRequest('Could not read device id: ' + error, response);
+            }
+            interface.turnOn(id, function (error, msg) {
+                if (error) {
+                    return createResponse.serverError(error, response);
+                }
+                return createResponse.on(msg, response);
+            });
+        });  
     },
 
     powerOff: function (request, response) {
-        callInterface(request, response, interface.turnOff, createResponse.off);
+        interface.turnOff(HARD_CODED_DEVICE_ID, function (error, msg) {
+            if (error) {
+                console.log("Could not call interface: " + error)
+                return createResponse.serverError(error, response);
+            }
+            return createResponse.off(msg, response);
+        });
     },
 
     status: function (request, response) {
-        callInterface(request, response, interface.status, createResponse.status);
+        interface.status(deviceIp, function (error, msg) {
+            if (error) {
+                console.log("Could not call interface: " + error)
+                return createResponse.serverError(error, response);
+            }
+            return createResponse.status(msg, response);
+        });
+    },
+
+    register: function (request, response) {
+        ipFromRequest(request, function (error, ip) {
+            if (error) {
+                console.log(error);
+                return createResponse.badRequest("Could not read client IP", response);
+            }
+            idFromRequest(request, function (error, deviceId) {
+                if (error) {
+                    console.log(error);
+                    return createResponse.badRequest("Could not read device id: " + error, response);
+                }
+                interface.register(deviceId, ip, function (error, message) {
+                    return createResponse.register(message, response);
+                });
+            });
+        });
     }
 }
 

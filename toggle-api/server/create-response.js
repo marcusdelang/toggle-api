@@ -16,6 +16,12 @@ var responses = {
         toSender.status(200);
         sendResponse(message, toSender);
     },
+    
+    register: function (message, toSender) {
+        // Manipulate response
+        toSender.status(200);
+        toSender.send(message);
+    },
 
     badRequest: function (message, toSender) {
         // Manipulate response

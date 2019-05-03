@@ -1,16 +1,11 @@
 var devices = require('./../database').devices;
 var chai = require('chai');
-var assert = chai.assert;
 var expect = chai.expect;
-var numbers = [1, 2, 3, 4, 5];
 var fs = require('fs');
-
-var temp;
 
 describe('devices database', function () {
 
     before(function (done) {
-        console.log(0);
         try {
             var devicesJson = fs.readFileSync(__dirname + '/../database/devices.json')
         } catch (e) {
@@ -52,12 +47,12 @@ describe('devices database', function () {
         }
         delete devicesObj['test_ip1']
         delete devicesObj['test_ip2']
-        fs.writeFileSync(__dirname + '/../database/devices.json', JSON.stringify(devicesObj));
+        fs.writeFileSync(__dirname + '/../database/devices.json', JSON.stringify(devicesObj, null, 2));
         done();
 
     });
 
-    it('should lookup an ip', function (done) {
+    it('should return a string on lookup', function (done) {
         devices.getIp('test_ip1', function (error, ip) {
             expect(typeof ip).to.be.equal('string');
             done();
@@ -68,7 +63,6 @@ describe('devices database', function () {
         devices.getIp('test_ip1', function (error, ip) {
             expect(ip).to.be.equal('test ip 1');
             devices.getIp('test_ip2', function (error, ip) {
-                console.log(3);
                 expect(ip).to.be.equal('test ip 2');
                 done();
             });

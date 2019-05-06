@@ -51,22 +51,34 @@ var requestActions = {
     },
 
     powerOff: function (request, response) {
-        interface.turnOff(HARD_CODED_DEVICE_ID, function (error, msg) {
+        idFromRequest(request, function (error, id) {
             if (error) {
-                console.log("Could not call interface: " + error)
-                return createResponse.serverError(error, response);
+                console.log('Could not read device id: ' + error);
+                return createResponse.badRequest('Could not read device id: ' + error, response);
             }
-            return createResponse.off(msg, response);
+            interface.turnOff(id, function (error, msg) {
+                if (error) {
+                    console.log("Could not call interface: " + error)
+                    return createResponse.serverError(error, response);
+                }
+                return createResponse.off(msg, response);
+            });
         });
     },
 
     status: function (request, response) {
-        interface.status(deviceIp, function (error, msg) {
+        idFromRequest(request, function (error, id) {
             if (error) {
-                console.log("Could not call interface: " + error)
-                return createResponse.serverError(error, response);
+                console.log('Could not read device id: ' + error);
+                return createResponse.badRequest('Could not read device id: ' + error, response);
             }
-            return createResponse.status(msg, response);
+            interface.status(id, function (error, msg) {
+                if (error) {
+                    console.log("Could not call interface: " + error)
+                    return createResponse.serverError(error, response);
+                }
+                return createResponse.status(msg, response);
+            });
         });
     },
 

@@ -23,6 +23,12 @@ var responses = {
         toSender.send(message);
     },
 
+    status: function (message, toSender) {
+        // Manipulate response
+        toSender.status(200);
+        toSender.send(message);
+    },
+
     badRequest: function (message, toSender) {
         // Manipulate response
         toSender.status(400)

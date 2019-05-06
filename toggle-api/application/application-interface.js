@@ -28,12 +28,24 @@ var interface = {
         });
     },
 
-    turnOff: function(ip, callback) {
-        callToggle(ip, toggles.outlet.off, callback)
+    turnOff: function (id, callback) {
+        getDeviceIp(id, function (error, ip) {
+            if (error) {
+                console.log("Error reading database: " + error);
+                return createResponse.serverError(error, response);
+            }
+            callToggle(ip, toggles.outlet.off, callback);
+        });
     },
 
-    status: function(ip, callback) {
-        callToggle(ip, toggles.outlet.status, callback)
+    status: function (id, callback) {
+        getDeviceIp(id, function (error, ip) {
+            if (error) {
+                console.log("Error reading database: " + error);
+                return createResponse.serverError(error, response);
+            }
+            callToggle(ip, toggles.outlet.status, callback);
+        });
     },
 
     register: function (deviceId, deviceIp, callback) {

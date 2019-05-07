@@ -1,6 +1,5 @@
 var createResponse = require('./create-response');
 var interface = require('./../application/application-interface');
-var HARD_CODED_DEVICE_ID = 1;
 
 function idFromRequest(request, callback) {
     if (!request) {
@@ -96,6 +95,21 @@ var requestActions = {
                 interface.register(deviceId, ip, function (error, message) {
                     return createResponse.register(message, response);
                 });
+            });
+        });
+    },
+
+    isDevice: function (request, response) {
+        idFromRequest(request, function (error, deviceId) {
+            if (error) {
+                console.log(error);
+                return createResponse.badRequest("Could not read device id: " + error, response);
+            }
+            interface.isDevice(deviceId, function (error, message) {
+                if (error) {
+                    return createResponse.notFound("Device not found: " + error);
+                }
+                return createResponse.isDevice(message, response);
             });
         });
     }

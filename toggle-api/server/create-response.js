@@ -39,6 +39,18 @@ var responses = {
         // Manipulate response
         toSender.status(500);
         sendResponse(message, toSender);
+    },
+
+    isDevice: function (message, toSender) {
+        // Manipulate response
+        toSender.status(200);
+        sendResponse(message, toSender);
+    },
+
+    notFound: function (message, toSender) {
+        // Manipulate response
+        toSender.status(404);
+        sendResponse(message, toSender);
     }
 }
 

@@ -56,6 +56,17 @@ var interface = {
             console.log('Device registered');
             return callback(null, 'Device registered');
         });
+    },
+
+    isDevice: function (deviceId, callback) {
+        getDeviceIp(deviceId, function (error, deviceIp) {
+            if (error) {
+                console.log("Error reading database: " + error);
+                return createResponse.serverError(error, response);
+            }
+            console.log('Device exists: ' + deviceId + ' : ' + deviceIp);
+            return callback(null, 'Device with ID exists');
+        });
     }
 }
 

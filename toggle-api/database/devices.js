@@ -15,14 +15,7 @@ var getIp = function (id, callback) {
     });
 }
 
-
-
-
-/*function getIp(id, callback) {
-    callback(null, '130.229.167.163');
-}*/
-
-function updateIp(id, ip, callback) {
+function setIp(id, ip, callback) {
     fs.readFile(pathToDatabase, function (error, data) {
         devices = JSON.parse(data);
         devices[id] = ip;
@@ -36,8 +29,13 @@ function updateIp(id, ip, callback) {
     });
 }
 
+function updateIp(id, ip, callback) {
+    setIp(id, ip, callback);
+}
+
 
 module.exports = {
     getIp: getIp,
+    setIp: setIp,
     updateIp: updateIp
 }

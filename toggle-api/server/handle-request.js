@@ -18,18 +18,18 @@ function ipFromRequest(request, callback) {
     if (!request) {
         return callback("Request undefined", null);
     }
-    if (!(request.headers['x-forwarded-for'] || request.ip)) {
-        return callback("Request ip undefined", null)
+    if (!(request.headers['x-forwarded-for'] || request.deviceIp)) {
+        return callback("Request deviceIp undefined", null)
     }
-    var ip = request.headers['x-forwarded-for'] || request.ip;
+    var deviceIp = request.headers['x-forwarded-for'] || request.deviceIp;
 
-    if (ip.match(/::ffff:/)) {
-        ip = ip.replace('::ffff:', '');
+    if (deviceIp.match(/::ffff:/)) {
+        deviceIp = deviceIp.replace('::ffff:', '');
     }
-    if (!ip.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)) {
+    if (!deviceIp.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/)) {
         return callback('Received invalid IP', null);
-    } 
-    callback(null, ip)
+    }
+    callback(null, deviceIp)
 }
 
 // Specify the request actions and responses
@@ -46,7 +46,7 @@ var requestActions = {
                 }
                 return createResponse.on(msg, response);
             });
-        });  
+        });
     },
 
     powerOff: function (request, response) {
@@ -81,8 +81,24 @@ var requestActions = {
         });
     },
 
-    register: function (request, response) {
-        ipFromRequest(request, function (error, ip) {
+    registerDevice: function (request, response) {
+        ipFromRequest(request, function (error, deviceIp) {
+            if (error) {
+                console.log(error);
+                return createResponse.badRequest("Could not read client IP", response);
+            }
+            interface.registerNewDevice(deviceIp, function (error, message, id) {
+                if (error) {
+                    console.log('Could not register new device: ' + error);
+                    return createResponse.serverError('Could not register new device', response);
+                }
+                return createResponse.registerNewDevice(message, id, response);
+            });
+        });
+    },
+
+    updateDeviceIp: function (request, response) {
+        ipFromRequest(request, function (error, deviceIp) {
             if (error) {
                 console.log(error);
                 return createResponse.badRequest("Could not read client IP", response);
@@ -92,7 +108,7 @@ var requestActions = {
                     console.log(error);
                     return createResponse.badRequest("Could not read device id: " + error, response);
                 }
-                interface.register(deviceId, ip, function (error, message) {
+                interface.updateDeviceIp(deviceId, deviceIp, function (error, message) {
                     return createResponse.register(message, response);
                 });
             });
@@ -107,7 +123,7 @@ var requestActions = {
             }
             interface.isDevice(deviceId, function (error, message) {
                 if (error) {
-                    return createResponse.notFound("Device not found: " + error);
+                    return createResponse.notFound("Device not found: " + error, response);
                 }
                 return createResponse.isDevice(message, response);
             });

@@ -23,6 +23,12 @@ var responses = {
         toSender.send(message);
     },
 
+    registerNewDevice: function (message, id, toSender) {
+        var json = { "id": id };
+        toSender.status(200);
+        toSender.json(json);
+    },
+
     status: function (message, toSender) {
         // Manipulate response
         toSender.status(200);

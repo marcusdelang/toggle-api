@@ -1,10 +1,9 @@
 
 function handleCallback(error, message, callback) {
     if (error) {
-        console.log("Could not call toggles: " + error);
         return callback(error, null);
     }
-    callback(null, message);
+    return callback(null, message);
 }
 
 function callToggle(ip, call, callback) {
@@ -13,7 +12,7 @@ function callToggle(ip, call, callback) {
     });
 }
 
-function makeId(length, callback) {
+function makeToken(length, callback) {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789?!';
     var charactersLength = characters.length;
@@ -26,5 +25,5 @@ function makeId(length, callback) {
 module.exports = {
     handleCallback: handleCallback,
     callToggle: callToggle,
-    makeId: makeId
+    makeToken: makeToken
 }

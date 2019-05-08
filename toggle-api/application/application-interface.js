@@ -1,68 +1,65 @@
 var toggles = require('./../toggles');
 var devices = require('./../database').devices;
-var utils = require('./utils');
+var errorCodes = require('./../error').errorCodes;
+var createErrorObject = require('./../error').createErrorObject;
+var util = require('./util');
 
 var interface = {
-    turnOn: function (id, callback) {
-        devices.getIp(id, function (error, ip) {
+    turnOn: function (deviceToken, callback) {
+        devices.getIp(deviceToken, function (error, ip) {
             if (error) {
-                console.log("Error reading database: " + error);
-                return createResponse.serverError(error, response);
+                return callback(error, null);
             }
-            utils.callToggle(ip, toggles.outlet.on, callback);
+            return util.callToggle(ip, toggles.outlet.on, callback);
         });
     },
 
-    turnOff: function (id, callback) {
-        devices.getIp(id, function (error, ip) {
+    turnOff: function (deviceToken, callback) {
+        devices.getIp(deviceToken, function (error, ip) {
             if (error) {
-                console.log("Error reading database: " + error);
-                return createResponse.serverError(error, response);
+                return callback(error, null);
             }
-            return utils.callToggle(ip, toggles.outlet.off, callback);
+            return util.callToggle(ip, toggles.outlet.off, callback);
         });
     },
 
-    status: function (id, callback) {
-        devices.getIp(id, function (error, ip) {
+    status: function (deviceToken, callback) {
+        devices.getIp(deviceToken, function (error, ip) {
             if (error) {
-                console.log("Error reading database: " + error);
-                return createResponse.serverError(error, response);
+                return callback(error, null);
             }
-            utils.callToggle(ip, toggles.outlet.status, callback);
+            util.callToggle(ip, toggles.outlet.status, callback);
         });
     },
 
-    updateDeviceIp: function (deviceId, deviceIp, callback) {
-        devices.updateIp(deviceId, deviceIp, function (error, message) {
+    updateDeviceIp: function (deviceToken, deviceIp, callback) {
+        devices.updateIp(deviceToken, deviceIp, function (error, message) {
             if (error) {
-                return callback('Device IP not updated: ' + error, null);
+                return callback(error, null);
             }
-            console.log('Device IP updated');
-            return callback(null, 'Device IP updated');
+            return callback(null, message);
         });
     },
 
     registerNewDevice: function (deviceIp, callback) {
-        utils.makeId(10, function (newDeviceId) {
-            devices.setIp(newDeviceId, deviceIp, function (error, message) {
+        util.makeToken(10, function (newDeviceToken) {
+            devices.setIp(newDeviceToken, deviceIp, function (error, message) {
                 if (error) {
-                    console.log("Error reading database: " + error);
-                    return callback('Error reading database: ' + error, null);
+                    return callback(error);
                 }
-                console.log('Device registered');
-                return callback(null, "Device registered", newDeviceId);
+                return callback(null, message, newDeviceToken);
             });
         });
     },
 
-    isDevice: function (deviceId, callback) {
-        devices.getIp(deviceId, function (error, deviceIp) {
+    isDevice: function (deviceToken, callback) {
+        devices.getIp(deviceToken, function (error, deviceIp) {
             if (error) {
-                console.log("Error reading database: " + error);
-                return callback('Error reading database: ' + error, null);
+                return callback(error, null);
             }
-            console.log('Device exists: ' + deviceId + ' : ' + deviceIp);
+            if (!deviceIp) {
+                return callback(createErrorObject('No ip found in database for this device Token', errorCodes.noIp, null), null);
+            }
             return callback(null, 'Device with provided Token exists');
         });
     }

@@ -2,7 +2,7 @@ var express = require("express");
 var bodyParser = require('body-parser');
 var router = require('./router');
 
-function start(config) {
+function start(config, callback) {
   var app = express();
 
   // Server parsing-config
@@ -16,6 +16,11 @@ function start(config) {
 
   // Start server
   var port = process.env.PORT || config.port;
+  
+  if (callback) {
+    callback(app);
+  }
+
   app.listen(port, function () {
     console.log("Server is running. If local, try http://localhost:" + port);
   });

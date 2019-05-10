@@ -1,45 +1,103 @@
 var createResponse = require('./create-response');
 var interface = require('./../application/application-interface');
-var getDeviceIp = require('./../database').devices.getIp;
-var HARD_CODED_DEVICE_ID = 1;
-
-// Do interface-call and send response back
-function callInterface(request, response, interfaceCall, createResponseCall) {
-
-    // Enable this part to parse device id from request body
-    /*if (!request.body) {
-        return createResponse.badRequest("HTTP body not valid JSON", response);
-    }
-    var deviceId = request.body.id;
-    */
-
-    getDeviceIp(HARD_CODED_DEVICE_ID, function (error, deviceIp) {
-        if (error) {
-            console.log("Error reading database: " + error);
-            return createResponse.serverError(error, response);
-        }
-        interfaceCall(deviceIp, function (error, msg) {
-            if (error) {
-                console.log("Could not call interface: " + error)
-                return createResponse.serverError(error, response);
-            }
-            createResponseCall(msg, response);
-        });
-    });
-}
+var handleErrorResponse = require('./../error').handleErrorResponse;
+var util = require('./util');
 
 // Specify the request actions and responses
 var requestActions = {
     powerOn: function (request, response) {
-        callInterface(request, response, interface.turnOn, createResponse.on);
+        util.deviceTokenFromRequest(request, function (error, deviceToken) {
+            if (error) {
+                return handleErrorResponse(error, response);
+            }
+            interface.turnOn(deviceToken, function (error, messageObject) {
+                if (error) {
+                    return handleErrorResponse(error, response);
+                }
+                return createResponse.on(messageObject.message, response);
+            });
+        });
     },
 
     powerOff: function (request, response) {
-        callInterface(request, response, interface.turnOff, createResponse.off);
+        util.deviceTokenFromRequest(request, function (error, deviceToken) {
+            if (error) {
+                return handleErrorResponse(error, response);
+            }
+            interface.turnOff(deviceToken, function (error, messageObject) {
+                if (error) {
+                    return handleErrorResponse(error, response)
+                }
+                return createResponse.off(messageObject.message, response);
+            });
+        });
     },
 
-    connectionStatus: function (request, response) {
-        callInterface(request, response, interface.connectionStatus, createResponse.connectionStatus);
+    status: function (request, response) {
+        util.deviceTokenFromRequest(request, function (error, deviceToken) {
+            if (error) {
+                return handleErrorResponse(error, response);
+            }
+            interface.status(deviceToken, function (error, messageObject) {
+                if (error) {
+                    return handleErrorResponse(error, response);
+                }
+                if (!messageObject.json.status_power) {
+                    
+                }
+                let json = {
+                    status_power: messageObject.json.status_power
+                }
+                return createResponse.status(json, response);
+            });
+        });
+    },
+
+    registerDevice: function (request, response) {
+        util.ipFromRequest(request, function (error, deviceIp) {
+            if (error) {
+                return handleErrorResponse(error, response);
+            }
+            interface.registerNewDevice(deviceIp, function (error, message, deviceToken) {
+                if (error) {
+                    return handleErrorResponse(error, response);
+                }
+                return createResponse.registerNewDevice(message, deviceToken, response);
+            });
+        });
+    },
+
+    updateDeviceIp: function (request, response) {
+        util.ipFromRequest(request, function (error, deviceIp) {
+            if (error) {
+                return handleErrorResponse(error, response);
+            }
+            util.deviceTokenFromRequest(request, function (error, deviceToken) {
+                if (error) {
+                    return handleErrorResponse(error, response);
+                }
+                interface.updateDeviceIp(deviceToken, deviceIp, function (error, message) {
+                    if (error) {
+                        return handleErrorResponse(error, response);
+                    }
+                    return createResponse.register(message, response);
+                });
+            });
+        });
+    },
+
+    isDevice: function (request, response) {
+        util.deviceTokenFromRequest(request, function (error, deviceToken) {
+            if (error) {
+                return handleErrorResponse(error, response);
+            }
+            interface.isDevice(deviceToken, function (error, message) {
+                if (error) {
+                    return handleErrorResponse(error, response);
+                }
+                return createResponse.isDevice(message, response);
+            });
+        });
     }
 }
 

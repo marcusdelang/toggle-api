@@ -21,7 +21,7 @@ function start(config, callback) {
     callback(app);
   }
 
-  app.listen(port, function () {
+  return app.listen(port, function () {
     console.log("Server is running. If local, try http://localhost:" + port);
   });
 }

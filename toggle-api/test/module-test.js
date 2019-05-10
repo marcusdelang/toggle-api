@@ -3,7 +3,7 @@ var server = require('../server/server');
 
 describe('/api/device/register', function () {
     it('should register a device successfully', function (done) {
-        server.start({ port: 80 }, test);
+        var close = server.start({ port: 80 }, test);
 
         function test(app) {
             request(app)
@@ -15,7 +15,7 @@ describe('/api/device/register', function () {
                     if (err) {
                         throw err;
                     }
-                    done();
+                    close.close(done);
                 });
         }
     });

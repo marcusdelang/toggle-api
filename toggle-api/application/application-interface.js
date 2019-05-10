@@ -6,29 +6,29 @@ var util = require('./util');
 
 var interface = {
     turnOn: function (deviceToken, callback) {
-        devices.getIp(deviceToken, function (error, ip) {
+        devices.getIp(deviceToken, function (error, deviceIp) {
             if (error) {
                 return callback(error, null);
             }
-            return util.callToggle(ip, toggles.outlet.on, callback);
+            return util.callToggle(deviceIp, deviceToken, toggles.outlet.on, callback);
         });
     },
 
     turnOff: function (deviceToken, callback) {
-        devices.getIp(deviceToken, function (error, ip) {
+        devices.getIp(deviceToken, function (error, deviceIp) {
             if (error) {
                 return callback(error, null);
             }
-            return util.callToggle(ip, toggles.outlet.off, callback);
+            return util.callToggle(deviceIp, deviceToken, toggles.outlet.off, callback);
         });
     },
 
     status: function (deviceToken, callback) {
-        devices.getIp(deviceToken, function (error, ip) {
+        devices.getIp(deviceToken, function (error, deviceIp) {
             if (error) {
                 return callback(error, null);
             }
-            util.callToggle(ip, toggles.outlet.status, callback);
+            util.callToggle(deviceIp, deviceToken, toggles.outlet.status, callback);
         });
     },
 
@@ -58,7 +58,7 @@ var interface = {
                 return callback(error, null);
             }
             if (!deviceIp) {
-                return callback(createErrorObject('No ip found in database for this device Token', errorCodes.noIp, null), null);
+                return callback(createErrorObject('No deviceIp found in database for this device Token', errorCodes.noIp, null), null);
             }
             return callback(null, 'Device with provided Token exists');
         });

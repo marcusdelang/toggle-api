@@ -11,25 +11,36 @@ var endpoints = {
 
 // Specify actions for endpoints
 module.exports = {
-    on: function (ip, callback) {
-        callOutletOnEndpoint(ip, endpoints.on, callback)
+    on: function (ip, token, callback) {
+        callOutletOnEndpoint(ip, token, endpoints.on, callback)
     },
 
-    off: function (ip, callback) {
-        callOutletOnEndpoint(ip, endpoints.off, callback);
+    off: function (ip, token, callback) {
+        callOutletOnEndpoint(ip, token, endpoints.off, callback);
     },
 
-    status: function (ip, callback) {
-        callOutletOnEndpoint(ip, endpoints.status, callback);
+    status: function (ip, token, callback) {
+        callOutletOnEndpoint(ip, token, endpoints.status, callback);
     }
 }
 
-function callOutletOnEndpoint(ip, endpoint, callback) {
-    var url = 'http://' + ip + endpoint;
-    req.get(url, function (error, response, body) {
+function callOutletOnEndpoint(ip, token, endpoint, callback) {
+    let url = 'http://' + ip + endpoint;
+    let options = {
+        method: 'post',
+        url: url,
+        body: { token: token },
+        timeout: 5000,
+        json: true
+    }
+    req(options, function (error, response, body) {
         if (error) {
-            let message = 'Api could not send request to toggle-io. \n' +  'Either something is wrong in the server, or the toggle-io software is not activated.'
+            let message = 'Api could not send request to toggle-io. \n' +
+                'Either something is wrong in the server, or the toggle-io software is not activated.'
             return callback(createErrorObject(message, errorCodes.server, error), null);
+        }
+        if (response.statusCode === 500) {
+            return callback(createErrorObject('toggle-io device had internal problem.', errorCodes.errorAtReceiver, null), null);
         }
         if (response.statusCode !== 200) {
             return callback(createErrorObject('Api sent bad request to toggle-io.', errorCodes.sentBadRequest, null), null);

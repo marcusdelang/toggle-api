@@ -6,8 +6,8 @@ function handleCallback(error, message, callback) {
     return callback(null, message);
 }
 
-function callToggle(ip, call, callback) {
-    call(ip, function (error, message) {
+function callToggle(ip, deviceToken, call, callback) {
+    call(ip, deviceToken, function (error, message) {
         handleCallback(error, message, callback)
     });
 }

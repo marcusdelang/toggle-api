@@ -30,7 +30,7 @@ function callOutletOnEndpoint(ip, token, endpoint, callback) {
         method: 'post',
         url: url,
         body: { token: token },
-        timeout: 5000,
+        timeout: 7000,
         json: true
     }
     req(options, function (error, response, body) {
@@ -47,7 +47,7 @@ function callOutletOnEndpoint(ip, token, endpoint, callback) {
         }
         let responseJson;
         if (body) {
-            responseJson = JSON.parse(body);
+            responseJson = JSON.stringify(body);
         }
         let messageObject = {
             message: 'Command was succesfully accepted by toggle-io device.',

@@ -11,7 +11,7 @@ initConfig(function () {
 function initConfig(callback) {
     fs.readFile('./server-config.json', function (error, data) {
         if (error) {
-            return console.log('ERROR READING CONFIG FILE: ' + err);
+            return console.log('ERROR READING CONFIG FILE: ' + error);
         }
         config = JSON.parse(data);
         callback();

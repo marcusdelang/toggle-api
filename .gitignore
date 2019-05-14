@@ -16,3 +16,5 @@ log/
 target/
 
 */node_modules/
+devices.json
+server-config.json
